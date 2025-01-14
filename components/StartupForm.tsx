@@ -93,7 +93,7 @@ const StartupForm = () => {
           name="title"
           className="startup-form_input"
           required
-          placeholder="JSM Academy Masterclasss"
+          placeholder="MEENAS"
         />
 
         {errors.title && <p className="startup-form_error">{errors.title}</p>}
@@ -109,7 +109,7 @@ const StartupForm = () => {
           className="startup-form_textarea"
           rows={5}
           required
-          placeholder="Short description of your startup idea"
+          placeholder="Looking at the saturation grade of international markets, emerging countries are necessary for growth in most industries. However, such markets are very dynamic, exceptionally unique and require ON-SITE experts. We assist companies with various services at our one-stop-shop and a huge network in the political and business world so that they can succeed."
         />
 
         {errors.description && (
@@ -126,7 +126,7 @@ const StartupForm = () => {
           name="category"
           required
           className="startup-form_input"
-          placeholder="Choose a category (e.g., Tech, Health, Education, etc.)"
+          placeholder="Banking"
         />
 
         {errors.category && (

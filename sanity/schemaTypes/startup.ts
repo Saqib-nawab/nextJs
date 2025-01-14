@@ -1,3 +1,4 @@
+
 import { defineField, defineType } from "sanity";
 
 export const startup = defineType({
@@ -33,10 +34,7 @@ export const startup = defineType({
       name: "category",
       type: "string",
       validation: (Rule) =>
-        Rule.min(1)
-          .max(20)
-          .required()
-          .error("Must have at least 1 and at most 20 characters"),
+        Rule.min(1).max(20).required().error("Please enter a category"),
     }),
     defineField({
       name: "image",
