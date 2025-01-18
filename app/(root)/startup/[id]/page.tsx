@@ -22,16 +22,19 @@ export const experimental_ppr = true;
 async function Page({ params }: { params: Promise<{ id: string }> }) {
   const id = (await params).id;
 
-  const [post, { select: editorPosts }] = await Promise.all([
-    client.fetch(STARTUP_BY_ID_QUERY, {
-      id: id,
-    }),
-    client.fetch(PLAYLIST_BY_SLUG_QUERY, {
-      slug: "editor-picks",
-    }),
+  // Fetch data from both queries
+  const [post, editorData] = await Promise.all([
+    client.fetch(STARTUP_BY_ID_QUERY, { id }),
+    client.fetch(PLAYLIST_BY_SLUG_QUERY, { slug: "editor-picks" }),
   ]);
 
+  // Handle missing post
   if (!post) return notFound();
+
+  // Safely access editor picks
+  const editorPosts = editorData?.select || [];
+
+  // Render markdown content
   const parsedContent = md.render(post?.pitch || "");
 
   return (
@@ -88,7 +91,7 @@ async function Page({ params }: { params: Promise<{ id: string }> }) {
 
         <hr className="divider" />
 
-        {editorPosts?.length > 0 && (
+        {editorPosts.length > 0 && (
           <div className="max-w-4xl mx-auto">
             <p className="text-30-semibold">Editor Picks</p>
 

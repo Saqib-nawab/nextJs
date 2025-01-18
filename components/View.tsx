@@ -1,25 +1,36 @@
-import { unstable_after as after } from "next/server";
+"use client";
 
 import Ping from "@/components/Ping";
-import { formatNumber } from "@/lib/utils";
-
 import { client } from "@/sanity/lib/client";
-import { writeClient } from "@/sanity/lib/write-client";
 import { STARTUP_VIEWS_QUERY } from "@/sanity/lib/queries";
+import { useEffect, useState } from "react";
 
-const View = async ({ id }: { id: string }) => {
-  const { views: totalViews } = await client
-    .withConfig({ useCdn: false })
-    .fetch(STARTUP_VIEWS_QUERY, {
-      id: id,
-    });
+const View = ({ id }: { id: string }) => {
+  const [totalViews, setTotalViews] = useState<number | null>(null);
 
-  after(async () => {
-    await writeClient
-      .patch(id)
-      .set({ views: totalViews + 1 })
-      .commit();
-  });
+  useEffect(() => {
+    const fetchAndUpdateViews = async () => {
+      try {
+        // Fetch the current view count
+        const { views } = await client
+          .withConfig({ useCdn: false })
+          .fetch(STARTUP_VIEWS_QUERY, { id });
+
+        setTotalViews(views);
+
+        // Update the views using the API route
+        await fetch("/api/updateViews", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, views: views + 1 }),
+        });
+      } catch (error) {
+        console.error("Failed to fetch or update views:", error);
+      }
+    };
+
+    fetchAndUpdateViews();
+  }, [id]);
 
   return (
     <div className="view-container">
@@ -28,7 +39,9 @@ const View = async ({ id }: { id: string }) => {
       </div>
 
       <p className="view-text">
-        <span className="font-black">{formatNumber(totalViews + 1)}</span> views
+        <span className="font-black">
+          Views: {totalViews !== null ? totalViews : "Loading..."}
+        </span>
       </p>
     </div>
   );
